@@ -14,8 +14,8 @@ load_obj = (cb) ->
     $.ajax url: url, error: (-> message "Error loading file from #{url}"), success: (data) ->
                         object = ((new THREE.OBJLoader()).parse data).children[0]
                         mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
-                                        [ new THREE.MeshLambertMaterial(color: 0xaaaaff, opacity: 0.5),
-                                          new THREE.MeshBasicMaterial(color: 0x000000, transparent: true, wireframe: true, opacity: 0.2) ]
+                                        [ new THREE.MeshLambertMaterial(color: 0xaaaadd, opacity: 0.5),
+                                          new THREE.MeshBasicMaterial(color: 0x002222, transparent: true, wireframe: true, opacity: 0.2) ]
                         scale = 1/mesh.children[0].geometry.boundingSphere.radius  # normalize size
                         mesh.scale = new THREE.Vector3 scale, scale, scale
 
@@ -33,15 +33,16 @@ init = (mesh) ->
 
     camera = new THREE.PerspectiveCamera view_conf.fov, view_conf.width/view_conf.height, view_conf.near, view_conf.far
     camera.position.z = 100
-    camera.lookAt scene.position
     scene.add camera
 
     light = new THREE.PointLight 0xffffff
     light.position = { x: 20, y: 70, z: 150 }
     scene.add light
 
-    sphere = new THREE.Mesh (new THREE.SphereGeometry 1, 32, 32), (new THREE.MeshBasicMaterial color: 0x00ff00, opacity: 0.2)
-    # scene.add sphere
+    grid = new THREE.SceneUtils.createMultiMaterialObject (new THREE.PlaneGeometry 2, 2, 20, 20),
+                    [(new THREE.MeshBasicMaterial color: 0xcccccc, opacity: 0.6, transparent: true, wireframe: true),
+                     (new THREE.MeshBasicMaterial color: 0xffffff, opacity: 0.6, transparent: true)]
+    scene.add grid.rotateOnAxis((new THREE.Vector3 1, 0, 0), Math.PI/2)
 
     scene.add mesh
 
