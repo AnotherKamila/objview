@@ -5,18 +5,21 @@ view_conf =
     near: 0.1
     far:  100000
 
-load_obj = (cb) ->
-    url = window.location.hash.match(/url=([^&]*)/)[1] ? 'test.obj'
-    $('#messages').text "Loading OBJ file..."
-    $.get url, (data, status) ->
-        object = ((new THREE.OBJLoader()).parse data).children[0]
-        mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
-                        [ new THREE.MeshLambertMaterial(color: 0xaaaaff, opacity: 0.5),
-                          new THREE.MeshBasicMaterial(color: 0x000000, transparent: true, wireframe: true, opacity: 0.2) ]
-        scale = 1/mesh.children[0].geometry.boundingSphere.radius  # normalize size
-        mesh.scale = new THREE.Vector3 scale, scale, scale
+message = (msg) -> $('#messages').text msg
 
-        cb mesh
+load_obj = (cb) ->
+    m = window.location.hash.match(/url=([^&]*)/)
+    url = if m? and m[1]? then m[1] else 'test.obj'
+    message "Loading OBJ file..."
+    $.ajax url: url, error: (-> message "Error loading file from #{url}"), success: (data) ->
+                        object = ((new THREE.OBJLoader()).parse data).children[0]
+                        mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
+                                        [ new THREE.MeshLambertMaterial(color: 0xaaaaff, opacity: 0.5),
+                                          new THREE.MeshBasicMaterial(color: 0x000000, transparent: true, wireframe: true, opacity: 0.2) ]
+                        scale = 1/mesh.children[0].geometry.boundingSphere.radius  # normalize size
+                        mesh.scale = new THREE.Vector3 scale, scale, scale
+
+                        cb mesh
 
 init = (mesh) ->
     container = $(document.body)
@@ -51,10 +54,7 @@ init = (mesh) ->
         renderer.render scene, camera  # TODO loop via requestAnimationFrame
         controls.update()
         requestAnimationFrame animate
-    $('#messages').text 'Controls: Left mouse button: rotate, Right mouse button: pan, Wheel: zoom'
+    message 'Controls: Left mouse button: rotate, Right mouse button: pan, Wheel: zoom'
     animate()
-
-
-
 
 load_obj init
