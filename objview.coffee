@@ -56,6 +56,7 @@ init = (mesh) ->
         controls.update()
         requestAnimationFrame animate
     message 'Controls: Left mouse button: rotate, Right mouse button: pan, Wheel: zoom'
+    $('#view canvas').on "click mousewheel", -> setTimeout (-> $('#messages').css opacity: 0), 1
     animate()
 
 load_obj init
