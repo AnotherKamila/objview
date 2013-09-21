@@ -9,13 +9,17 @@ message = (msg) -> $('#messages').text msg
 
 load_obj = (cb) ->
     m = window.location.hash.match(/url=([^&]*)/)
-    url = if m? and m[1]? then m[1] else 'test.obj'
+    if m? and m[1]?
+        url = m[1]
+    else
+        message 'No URL specified. Append #url=<something.obj> to address.'
+        return
     message "Loading OBJ file..."
     $.ajax url: url, error: (-> message "Error loading file from #{url}"), success: (data) ->
                         object = ((new THREE.OBJLoader()).parse data).children[0]
                         mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
-                                        [ new THREE.MeshLambertMaterial(color: 0xaaaadd, opacity: 0.5),
-                                          new THREE.MeshBasicMaterial(color: 0x002222, transparent: true, wireframe: true, opacity: 0.2) ]
+                                        [ new THREE.MeshLambertMaterial(color: 0x00aaff, opacity: 0.5),
+                                          new THREE.MeshBasicMaterial(color: 0x0013a6, transparent: true, wireframe: true, opacity: 0.2) ]
                         scale = 1/mesh.children[0].geometry.boundingSphere.radius  # normalize size
                         mesh.scale = new THREE.Vector3 scale, scale, scale
 
@@ -51,12 +55,13 @@ init = (mesh) ->
     controls.noPan = false
     controls.noZoom = false
 
-    animate = ->
-        renderer.render scene, camera  # TODO loop via requestAnimationFrame
-        controls.update()
-        requestAnimationFrame animate
     message 'Controls: Left mouse button: rotate, Right mouse button: pan, Wheel: zoom'
     $('#view canvas').on "click mousewheel", -> setTimeout (-> $('#messages').css opacity: 0), 1
+    animate = ->
+        renderer.render scene, camera
+        controls.update()
+        requestAnimationFrame animate
     animate()
 
-load_obj init
+$(window).on hashchange: -> load_obj init
+$(window).trigger 'hashchange'
