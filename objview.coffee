@@ -17,8 +17,10 @@ load_obj = (cb) ->
         message 'No URL specified. Append #url=<something.obj> to address.'
         return
     message "Loading OBJ file..."
-    $.ajax url: url, error: (-> message "Error loading file from #{url}"), success: (data) ->
-                        object = ((new THREE.OBJLoader()).parse data).children[0]
+    url = "http://whateverorigin.org/get?url=#{encodeURIComponent url}&callback=?"
+    console.log url
+    $.ajax url: url, dataType: "json", error: ((e) -> message "Error loading file from #{url} (#{e.status} #{e.statusText})"), success: (data) ->
+                        object = ((new THREE.OBJLoader()).parse data.contents).children[0]
                         mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
                                         [ new THREE.MeshLambertMaterial(color: 0x00aaff),
                                           new THREE.MeshBasicMaterial(color: 0x0013a6, transparent: true, wireframe: true, opacity: 0.2) ]
@@ -71,6 +73,5 @@ init = (mesh) ->
 $(window).on hashchange: -> load_obj init
 $(window).trigger 'hashchange'
 
-# $('#urlbox').on mouseenter: (-> $('#urlbox').focus()), : -> console.log "loading $('#urlbox').val()"; window.location.hash = "url=#{$('#urlbox').val()}"
-$('#urlbox').on mouseenter: (-> $('#urlbox').focus()), change: -> console.log "loading $('#urlbox').val()"; window.location.hash = "url=#{$('#urlbox').val()}"
+$('#urlbox').on mouseenter: (-> $('#urlbox').focus()), change: -> window.location.hash = "url=#{$('#urlbox').val()}"
                 
