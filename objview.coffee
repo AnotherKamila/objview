@@ -8,9 +8,11 @@ view_conf =
 message = (msg) -> $('#messages').text msg
 
 load_obj = (cb) ->
+    $('#messages').css opacity: 1
     m = window.location.hash.match(/url=([^&]*)/)
     if m? and m[1]?
         url = m[1]
+        $('#urlbox').val m[1]
     else
         message 'No URL specified. Append #url=<something.obj> to address.'
         return
@@ -68,3 +70,7 @@ init = (mesh) ->
 
 $(window).on hashchange: -> load_obj init
 $(window).trigger 'hashchange'
+
+# $('#urlbox').on mouseenter: (-> $('#urlbox').focus()), : -> console.log "loading $('#urlbox').val()"; window.location.hash = "url=#{$('#urlbox').val()}"
+$('#urlbox').on mouseenter: (-> $('#urlbox').focus()), change: -> console.log "loading $('#urlbox').val()"; window.location.hash = "url=#{$('#urlbox').val()}"
+                
