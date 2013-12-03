@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+}
+#messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.2em;
+  background: rgba(255,255,255,0.3);
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  transition: 1s opacity ease-in-out;
+}
+#view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+}
