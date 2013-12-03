@@ -2,8 +2,8 @@ view_conf =
     width:  $('#view').width()
     height: $('#view').height()
     fov:  Math.PI/2
-    near: 0.1
-    far:  100000
+    near: 1
+    far:  10000
 
 message = (msg) -> $('#messages').text msg
 
@@ -18,7 +18,7 @@ load_obj = (cb) ->
     $.ajax url: url, error: (-> message "Error loading file from #{url}"), success: (data) ->
                         object = ((new THREE.OBJLoader()).parse data).children[0]
                         mesh = new THREE.SceneUtils.createMultiMaterialObject object.geometry,
-                                        [ new THREE.MeshLambertMaterial(color: 0x00aaff, opacity: 0.5),
+                                        [ new THREE.MeshLambertMaterial(color: 0x00aaff),
                                           new THREE.MeshBasicMaterial(color: 0x0013a6, transparent: true, wireframe: true, opacity: 0.2) ]
                         scale = 1/mesh.children[0].geometry.boundingSphere.radius  # normalize size
                         mesh.scale = new THREE.Vector3 scale, scale, scale
@@ -43,9 +43,12 @@ init = (mesh) ->
     light.position = { x: 20, y: 70, z: 150 }
     scene.add light
 
+    ambient_light = new THREE.AmbientLight 0x282833
+    scene.add ambient_light
+
     grid = new THREE.SceneUtils.createMultiMaterialObject (new THREE.PlaneGeometry 2, 2, 20, 20),
-                    [(new THREE.MeshBasicMaterial color: 0xcccccc, opacity: 0.6, transparent: true, wireframe: true),
-                     (new THREE.MeshBasicMaterial color: 0xffffff, opacity: 0.6, transparent: true)]
+                    [(new THREE.MeshBasicMaterial color: 0xaaaaaa, opacity: 0.5, transparent: true, wireframe: true),
+                     (new THREE.MeshBasicMaterial color: 0xffffff, opacity: 0.3, transparent: true, side: THREE.DoubleSide)]
     scene.add grid.rotateOnAxis((new THREE.Vector3 1, 0, 0), Math.PI/2)
 
     scene.add mesh
